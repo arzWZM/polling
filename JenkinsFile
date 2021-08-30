@@ -5,7 +5,7 @@ pipeline {
         stage('Build') {
             steps {
 			    bat 'echo %PATH%'
-                bat 'pip install -r requirements.txt'
+                bat 'pip3 install -r requirements.txt'
             }
         }
         stage('Test') {
@@ -15,7 +15,15 @@ pipeline {
         }
         stage('Deploy') {
             steps {
-                echo 'Deploying....'
+                bat 'ssh deployment-user@192.168.56.101  "source venv/bin/activate; \
+				cd polling; \
+				git pull origin master; \
+				pip install -r requirements.txt --no-warn-script-location; \
+				python3 manage.py migrate; \
+				deactivate; \
+				sudo systemctl restart nginx; \
+				sudo systemctl restart gunicorn; \
+				"'
             }
         }
     }
