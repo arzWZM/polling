@@ -14,6 +14,11 @@ pipeline {
             }
         }
         stage('Deploy') {
+			input {
+				message "Shall we deploy to production?"
+				ok "Yes"
+			}
+			
             steps {
                 bat 'ssh -i C:\\Users\\Jinsu\\.ssh\\id_rsa  -o StrictHostKeyChecking=no deployment-user@192.168.56.101  "source venv/bin/activate; \
 				cd polling; \
