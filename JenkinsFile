@@ -13,7 +13,27 @@ pipeline {
                 bat 'python manage.py test'
             }
         }
-        stage('Deploy') {
+
+        stage('Deploy-To-Staging') {
+			input {
+				message "Shall we deploy to production?"
+				ok "Yes"
+			}
+			
+            steps {
+                bat 'ssh -i C:\\Users\\Jinsu\\.ssh\\id_rsa  -o StrictHostKeyChecking=no deployment-user@192.168.56.101  "source venv/bin/activate; \
+				cd polling; \
+				git pull origin master; \
+				pip install -r requirements.txt --no-warn-script-location; \
+				python3 manage.py migrate; \
+				deactivate; \
+				sudo systemctl restart nginx; \
+				sudo systemctl restart gunicorn; \
+				"'
+            }
+        }
+		
+        stage('Deploy-To-Prod') {
 			input {
 				message "Shall we deploy to production?"
 				ok "Yes"
